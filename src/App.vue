@@ -1,13 +1,16 @@
 <template>
-  
+  <div>
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>
-export default {
 
+export default {
+  name:'App'
 }
 </script>
 
-<style>
-
+<style lang='less'>
+@import url(./styles/base.less);
 </style>
