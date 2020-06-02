@@ -6,6 +6,8 @@ import App from './App.vue'
 import router from '@/router'
 // Element-UI导入
 import "@/plugins/elementui/elementui"
+// axios导入
+import "@/utils/request"
 
 
 Vue.config.productionTip = false

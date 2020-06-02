@@ -8,7 +8,7 @@
         <span class="sub-title">用户登录</span>
       </div>
       <!-- form表单 -->
-      <el-form class="login-form" :model="inputInfo" :rules="rules" status-icon>
+      <el-form class="login-form" :model="inputInfo" :rules="rules" status-icon ref="formData">
         <el-form-item label prop="phone">
           <el-input v-model="inputInfo.phone" prefix-icon="el-icon-user-solid" placeholder="请输入手机号"></el-input>
         </el-form-item>
@@ -26,7 +26,7 @@
               <el-input v-model="inputInfo.code" prefix-icon="el-icon-key" placeholder="请输入验证码"></el-input>
             </el-col>
             <el-col :span="8">
-              <img class="captcha" src="@/assets/images/login_captcha.png" alt />
+              <img class="captcha" :src="codeURL" @click="codeClick" />
             </el-col>
           </el-row>
         </el-form-item>
@@ -36,7 +36,7 @@
           <el-link type="primary">隐私条款</el-link>
         </el-form-item>
         <el-form-item>
-          <el-button style="width:100%" type="primary">登录</el-button>
+          <el-button style="width:100%" type="primary" @click="loginClick">登录</el-button>
         </el-form-item>
         <el-form-item>
           <el-button style="width:100%" type="primary">注册</el-button>
@@ -54,16 +54,16 @@ export default {
   name: "Login",
   data() {
     return {
+      codeURL: process.env.VUE_APP_BASEURL + "/captcha?type=login",
       inputInfo: {
-        phone: "",
-        password: "",
+        phone: "18511111111",
+        password: "12345678",
         code: "",
-        isCheck:false
+        isCheck: false
       },
       rules: {
         phone: [
-          // { required: true, message: "请输入手机号", trigger: "blur" },
-          // { min: 11, max: 11, message: "手机号不正确", trigger: "blur" }
+          // 自定义校验
           {
             validator: (rule, value, callback) => {
               if (!value) {
@@ -86,16 +86,56 @@ export default {
           { required: true, message: "请输入验证码", trigger: "blur" },
           { min: 4, max: 4, message: "验证码必须为4位", trigger: "blur" }
         ],
-        isCheck:[
-          {validator:(rule,value,callback)=>{
-            if (!value) {
-              return callback(new Error("必须同意用户协议！"));
-            }
-            callback()
-          },trigger:'change'}
+        isCheck: [
+          {
+            validator: (rule, value, callback) => {
+              if (!value) {
+                return callback(new Error("必须同意用户协议！"));
+              }
+              callback();
+            },
+            trigger: "change"
+          }
         ]
       }
     };
+  },
+  methods: {
+    // 点击刷新验证码
+    codeClick() {
+      this.codeURL =
+        process.env.VUE_APP_BASEURL + "/captcha?type=login&r=" + Math.random();
+    },
+    loginClick() {
+      // 登录时表单校验
+      this.$refs.formData.validate(valid => {
+        if (!valid) return;
+        this.$axios.post("/login", this.inputInfo).then(res => {
+          console.log(res);
+
+          if (res.data.code === 200) {
+            this.$message({
+              showClose: true,
+              message: "登录成功！",
+              type: "success",
+              center: true
+            });
+          } else {
+            // 刷新验证码
+            this.codeURL =
+              process.env.VUE_APP_BASEURL +
+              "/captcha?type=login&r=" +
+              Math.random();
+            // 提示信息
+            this.$message({
+              showClose: true,
+              message: res.data.message,
+              type: "warning"
+            });
+          }
+        });
+      });
+    }
   }
 };
 </script>
