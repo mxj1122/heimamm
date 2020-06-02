@@ -8,25 +8,30 @@
         <span class="sub-title">用户登录</span>
       </div>
       <!-- form表单 -->
-      <el-form class="login-form">
-        <el-form-item label>
-          <el-input prefix-icon="el-icon-user-solid" placeholder="请输入手机号"></el-input>
+      <el-form class="login-form" :model="inputInfo" :rules="rules" status-icon>
+        <el-form-item label prop="phone">
+          <el-input v-model="inputInfo.phone" prefix-icon="el-icon-user-solid" placeholder="请输入手机号"></el-input>
         </el-form-item>
-        <el-form-item label>
-          <el-input prefix-icon="el-icon-s-goods" show-password placeholder="请输入密码"></el-input>
+        <el-form-item label prop="password">
+          <el-input
+            v-model="inputInfo.password"
+            prefix-icon="el-icon-s-goods"
+            show-password
+            placeholder="请输入密码"
+          ></el-input>
         </el-form-item>
-        <el-form-item label>
+        <el-form-item label prop="code">
           <el-row :gutter="20">
             <el-col :span="16">
-              <el-input prefix-icon="el-icon-key" placeholder="请输入验证码"></el-input>
+              <el-input v-model="inputInfo.code" prefix-icon="el-icon-key" placeholder="请输入验证码"></el-input>
             </el-col>
             <el-col :span="8">
-              <img class="captcha" src='@/assets/images/login_captcha.png' alt />
+              <img class="captcha" src="@/assets/images/login_captcha.png" alt />
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item>
-          <el-checkbox></el-checkbox>我已阅读并同意
+        <el-form-item prop="isCheck">
+          <el-checkbox v-model="inputInfo.isCheck"></el-checkbox>我已阅读并同意
           <el-link type="primary">用户协议</el-link>和
           <el-link type="primary">隐私条款</el-link>
         </el-form-item>
@@ -45,7 +50,54 @@
 </template>
 
 <script>
-export default {};
+export default {
+  name: "Login",
+  data() {
+    return {
+      inputInfo: {
+        phone: "",
+        password: "",
+        code: "",
+        isCheck:false
+      },
+      rules: {
+        phone: [
+          // { required: true, message: "请输入手机号", trigger: "blur" },
+          // { min: 11, max: 11, message: "手机号不正确", trigger: "blur" }
+          {
+            validator: (rule, value, callback) => {
+              if (!value) {
+                return callback(new Error("手机号不能为空！"));
+              }
+              const reg = /^1[3456789][0-9]{9}$/;
+              if (!reg.test(value)) {
+                return callback(new Error("请填写正确的手机号！"));
+              }
+              callback();
+            },
+            trigger: "blur"
+          }
+        ],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          { min: 6, message: "密码长度最少需要6位", trigger: "blur" }
+        ],
+        code: [
+          { required: true, message: "请输入验证码", trigger: "blur" },
+          { min: 4, max: 4, message: "验证码必须为4位", trigger: "blur" }
+        ],
+        isCheck:[
+          {validator:(rule,value,callback)=>{
+            if (!value) {
+              return callback(new Error("必须同意用户协议！"));
+            }
+            callback()
+          },trigger:'change'}
+        ]
+      }
+    };
+  }
+};
 </script>
 
 <style lang='less'>
