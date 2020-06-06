@@ -39,19 +39,30 @@
           <el-button style="width:100%" type="primary" @click="loginClick">登录</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button style="width:100%" type="primary">注册</el-button>
+          <el-button style="width:100%" type="primary" @click="registerClick">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="right">
       <img src="@/assets/images/login_bg.png" alt />
     </div>
+
+    <!-- 使用注册子组件 -->
+    <register ref="registerRef"></register>
   </div>
 </template>
 
 <script>
+// 按需导入保存token函数
+import { setToken } from "@/utils/token";
+// 导入注册子组件
+import register from "./register";
+
 export default {
   name: "Login",
+  components: {
+    register
+  },
   data() {
     return {
       codeURL: process.env.VUE_APP_BASEURL + "/captcha?type=login",
@@ -108,33 +119,68 @@ export default {
     },
     loginClick() {
       // 登录时表单校验
-      this.$refs.formData.validate(valid => {
+      this.$refs.formData.validate(async valid => {
         if (!valid) return;
-        this.$axios.post("/login", this.inputInfo).then(res => {
-          console.log(res);
+        // this.$axios.post("/login", this.inputInfo).then(res => {
+        //   console.log(res);
 
-          if (res.data.code === 200) {
-            this.$message({
-              showClose: true,
-              message: "登录成功！",
-              type: "success",
-              center: true
-            });
-          } else {
-            // 刷新验证码
-            this.codeURL =
-              process.env.VUE_APP_BASEURL +
-              "/captcha?type=login&r=" +
-              Math.random();
-            // 提示信息
-            this.$message({
-              showClose: true,
-              message: res.data.message,
-              type: "warning"
-            });
-          }
-        });
+        //   if (res.data.code === 200) {
+        //     this.$message({
+        //       showClose: true,
+        //       message: "登录成功！",
+        //       type: "success",
+        //       center: true
+        //     });
+        //   } else {
+        //     // 刷新验证码
+        //     this.codeURL =
+        //       process.env.VUE_APP_BASEURL +
+        //       "/captcha?type=login&r=" +
+        //       Math.random();
+        //     // 提示信息
+        //     this.$message({
+        //       showClose: true,
+        //       message: res.data.message,
+        //       type: "warning"
+        //     });
+        //   }
+        // });
+
+        // async和await 处理异步函数防止回调地狱
+        const res = await this.$axios.post("/login", this.inputInfo);
+        console.log(res);
+
+        if (res.data.code === 200) {
+          this.$message({
+            showClose: true,
+            message: "登录成功！",
+            type: "success",
+            center: true
+          });
+          // 保存token
+          console.log(res.data.data.token);
+
+          setToken(res.data.data.token);
+          // 跳转到layout页面
+          this.$router.push("/layout");
+        } else {
+          // 刷新验证码
+          this.codeURL =
+            process.env.VUE_APP_BASEURL +
+            "/captcha?type=login&r=" +
+            Math.random();
+          // 提示信息
+          this.$message({
+            showClose: true,
+            message: res.data.message,
+            type: "warning"
+          });
+        }
       });
+    },
+    // 注册点击事件
+    registerClick() {
+      this.$refs.registerRef.dialogVisible=true
     }
   }
 };
