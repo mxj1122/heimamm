@@ -11,6 +11,7 @@
         label-width="80px"
         :model="registerForm"
         :rules="rules"
+        status-icon
       >
         <!-- 头像上传 -->
         <el-form-item label="头像" prop="avatar">
@@ -211,7 +212,6 @@ export default {
       this.imageUrl = process.env.VUE_APP_BASEURL + "/" + res.data.file_path;
       // 给avater赋值。是服务器返回的文件地址。发送注册请求时使用
       this.registerForm.avatar = res.data.file_path;
-      
     },
     submit() {
       this.$refs.registerFormRef.validate(async valid => {
@@ -227,9 +227,9 @@ export default {
             type: "success"
           });
           // 关闭注册窗口
-          this.dialogVisible=false
-        }else{
-          this.$message.error(res.data.message)
+          this.dialogVisible = false;
+        } else {
+          this.$message.error(res.data.message);
         }
       });
     }
