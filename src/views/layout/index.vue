@@ -1,5 +1,6 @@
 <template>
   <el-container class="layout">
+    <!-- 头部 -->
     <el-header class="header">
       <div class="left">
         <i @click="isCollapse = !isCollapse" style="font-size: 20px;" class="el-icon-s-fold"></i>
@@ -13,8 +14,9 @@
       </div>
     </el-header>
     <el-container>
+      <!-- 侧边栏 -->
       <el-aside width="auto">
-        <el-menu router default-active="3" class="el-menu-vertical-demo" :collapse="isCollapse">
+        <el-menu router :default-active="indexActive" class="el-menu-vertical-demo" :collapse="isCollapse">
           <el-menu-item index="/layout/chart">
             <i class="el-icon-pie-chart"></i>
             <span slot="title">数据预览</span>
@@ -37,6 +39,7 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
+      <!-- 内容 -->
       <el-main style="background-color:#e8e9ec;">
         <router-view></router-view>
       </el-main>
@@ -51,7 +54,8 @@ export default {
     return {
       isCollapse: false,
       avatar: "",
-      username: ""
+      username: "",
+      indexActive:'/layout/user'//侧边栏选中项
     };
   },
   methods: {
@@ -88,6 +92,10 @@ export default {
       this.avatar = process.env.VUE_APP_BASEURL + "/" + res.data.data.avatar;
       this.username = res.data.data.username;
     }
+    // console.log(this.$router);
+    // 在刷新时侧边栏选中项不会改变
+    this.indexActive=this.$router.currentRoute.fullPath
+    
   }
 };
 </script>
