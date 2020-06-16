@@ -20,7 +20,7 @@
         <br />
         <el-form-item>
           <el-button type="primary" @click="search">搜索</el-button>
-          <el-button>清除</el-button>
+          <el-button @click="removeIfo">清除</el-button>
           <el-button type="primary">新增用户</el-button>
         </el-form-item>
       </el-form>
@@ -116,6 +116,12 @@ export default {
       this.page=val
       // 不是渲染第一页 调用getUserFormData
       this.getUserFormData()
+    },
+    // 清空按钮事件
+    removeIfo() {
+      // 调用elementUi表单清空事件事件resetFields，必须有prop否则此事件无效， 官方demo没有写
+      this.$refs.userFormRef.resetFields ()
+      this.search()
     }
   }
 };
