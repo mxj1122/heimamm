@@ -55,7 +55,7 @@ export default {
       isCollapse: false,
       avatar: "",
       username: "",
-      indexActive:'/layout/user'//侧边栏选中项
+      indexActive:'/user'//侧边栏选中项
     };
   },
   methods: {

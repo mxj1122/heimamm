@@ -21,7 +21,7 @@
         <el-form-item>
           <el-button type="primary" @click="search">搜索</el-button>
           <el-button @click="removeIfo">清除</el-button>
-          <el-button type="primary">新增用户</el-button>
+          <el-button type="primary" @click="add">新增用户</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -45,9 +45,10 @@
           <template slot-scope="scope">
             <el-button type="primary">编辑</el-button>
             <el-button
+              @click="changeStatus(scope.row.id)"
               :type="scope.row.status===0?'success':'info'"
             >{{scope.row.status===0?'启用':'禁用'}}</el-button>
-            <el-button type="danger">删除</el-button>
+            <el-button type="danger" @click="removeUser(scope.row.id,scope.row.username)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -63,11 +64,16 @@
         ></el-pagination>
       </div>
     </el-card>
+    <useredit ref="userEdigRef"></useredit>
   </div>
 </template>
 <script>
+import useredit from "./user-del-edig.vue";
 export default {
   name: "user",
+  components: {
+    useredit
+  },
   data() {
     return {
       formInline: {
@@ -76,7 +82,7 @@ export default {
         role_id: ""
       },
       page: 1, //第几页
-      limit: 2, //总共多少页
+      limit: 5, //总共多少页
       userList: [], //用户数据列表
       total: 0 //分页总条数
     };
@@ -113,15 +119,54 @@ export default {
     // 加载第几页事件
     handleCurrentChange(val) {
       // console.log(`当前页: ${val}`);
-      this.page=val
+      this.page = val;
       // 不是渲染第一页 调用getUserFormData
-      this.getUserFormData()
+      this.getUserFormData();
     },
     // 清空按钮事件
     removeIfo() {
       // 调用elementUi表单清空事件事件resetFields，必须有prop否则此事件无效， 官方demo没有写
-      this.$refs.userFormRef.resetFields ()
-      this.search()
+      this.$refs.userFormRef.resetFields();
+      this.search();
+    },
+    // 改变启用/禁用状态 事件
+    async changeStatus(id) {
+      const res = await this.$axios.post("/user/status", { id });
+      // console.log(res);
+      if (res.data.code === 200) {
+        this.$message({
+          message: "状态修改成功！",
+          type: "success"
+        });
+        this.search();
+      }
+    },
+    // 删除用户事件
+    removeUser(id, username) {
+      this.$confirm(
+        `此操作将永久删除用户 ${username} 的信息, 是否继续?`,
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      )
+        .then(async () => {
+          const res = await this.$axios.post("/user/remove", { id });
+          if (res.data.code === 200) {
+            this.$message({
+              message: "删除成功！",
+              type: "success"
+            });
+            this.search();
+          }
+        })
+        .catch(() => {});
+    },
+    // 新增用户
+    add() {
+      this.$refs.userEdigRef.centerDialogVisible = true;
     }
   }
 };
