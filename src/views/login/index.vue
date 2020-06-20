@@ -148,7 +148,7 @@ export default {
 
         // async和await 处理异步函数防止回调地狱
         const res = await this.$axios.post("/login", this.inputInfo);
-        console.log(res);
+        // console.log(res);
 
         if (res.data.code === 200) {
           this.$message({
@@ -158,11 +158,9 @@ export default {
             center: true
           });
           // 保存token
-          console.log(res.data.data.token);
-
           setToken(res.data.data.token);
           // 跳转到layout页面
-          this.$router.push("/layout");
+          this.$router.push("/layout/welcome");
         } else {
           // 刷新验证码
           this.codeURL =

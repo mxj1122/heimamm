@@ -43,7 +43,7 @@
         </el-table-column>
         <el-table-column label="操作" width="280">
           <template slot-scope="scope">
-            <el-button type="primary">编辑</el-button>
+            <el-button type="primary" @click="editUser(scope.row)">编辑</el-button>
             <el-button
               @click="changeStatus(scope.row.id)"
               :type="scope.row.status===0?'success':'info'"
@@ -166,7 +166,25 @@ export default {
     },
     // 新增用户
     add() {
+      this.$refs.userEdigRef.model='add'
       this.$refs.userEdigRef.centerDialogVisible = true;
+      // 解决第二次打开新增/编辑窗口还是会保留上次填写信息和校验的问题
+      this.$nextTick(()=>{
+        this.$refs.userEdigRef.$refs.userFormRef.resetFields()
+      })
+    },
+    // 编辑用户
+    editUser(row) {
+      this.$refs.userEdigRef.model='edit'
+      this.$refs.userEdigRef.centerDialogVisible = true;
+      // 在user-del-edig.vue 的el-form表单中使用绑定使相应的字符串转换为数字 和深浅拷贝
+      // this.$refs.userEdigRef.formLabelAlign=row
+      this.$refs.userEdigRef.formLabelAlign=JSON.parse(JSON.stringify(row))
+      
+      // 解决第二次打开编辑窗口还是会保留上次校验的问题
+      this.$nextTick(()=>{
+        this.$refs.userEdigRef.$refs.userFormRef.clearValidate()
+      })
     }
   }
 };

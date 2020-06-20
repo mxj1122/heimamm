@@ -5,11 +5,14 @@ import VueRouter from 'vue-router'
 // 子组件导入 
 import Login from '@/views/login'
 import Layout from '@/views/layout'
+
 import Chart from '@/views/layout/chart'
 import Enterprise from '@/views/layout/enterprise'
 import Question from '@/views/layout/question'
 import Subject from '@/views/layout/subject'
 import User from '@/views/layout/user'
+import Welcome from '@/views/layout/welcome'
+
 
 // token导入
 import { getToken } from '@/utils/token'
@@ -25,7 +28,8 @@ const router = new VueRouter({
             {path:'enterprise',component:Enterprise},
             {path:'question',component:Question},
             {path:'subject',component:Subject},
-            {path:'user',component:User}
+            {path:'user',component:User},
+            {path:'welcome',component:Welcome},
         ]}
     ]
 })
