@@ -168,9 +168,18 @@ export default {
     add() {
       this.$refs.userEdigRef.model='add'
       this.$refs.userEdigRef.centerDialogVisible = true;
+      // 直接使用el-form的resetFields方法会有BUG：第一次先打开编辑再打开新增表单中的关于新增的内容还在
+      this.$refs.userEdigRef.formLabelAlign={
+        username: "",
+        email: "",
+        phone: "",
+        role_id: "",
+        status: "",
+        remark: ""
+      }
       // 解决第二次打开新增/编辑窗口还是会保留上次填写信息和校验的问题
       this.$nextTick(()=>{
-        this.$refs.userEdigRef.$refs.userFormRef.resetFields()
+        this.$refs.userEdigRef.$refs.userFormRef.clearValidate()
       })
     },
     // 编辑用户

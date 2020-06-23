@@ -70,7 +70,7 @@ export default {
         phone: "18511111111",
         password: "12345678",
         code: "",
-        isCheck: false
+        isCheck: true
       },
       rules: {
         phone: [
